@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/backend/backend/.vs/backend/DesignTimeBuild
+/backend/backend/.vs/ProjectEvaluation/backend.metadata.v9.bin
+/backend/backend/.vs/ProjectEvaluation/backend.projects.v9.bin
+/backend/backend/.vs/backend/v17/.suo
+/backend/backend/.vs/backend/v17/.futdcache.v2
