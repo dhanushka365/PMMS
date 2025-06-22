@@ -10,7 +10,7 @@ public class MaintenanceRequest
     public string Description { get; set; } = string.Empty;
     public MaintenanceStatus Status { get; set; } = MaintenanceStatus.New;
     public string? ImageFileName { get; set; }
-    public string? ImageData { get; set; } // Base64 encoded image data
+    public string? ImageData { get; set; } 
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedDate { get; set; }
     public string CreatedBy { get; set; } = string.Empty;
