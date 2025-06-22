@@ -7,3 +7,7 @@
 /backend/backend/.vs/ProjectEvaluation/backend.projects.v9.bin
 /backend/backend/.vs/backend/v17/.suo
 /backend/backend/.vs/backend/v17/.futdcache.v2
+*.vsidx
+/backend/backend/backend/obj/Debug/net8.0/backend.AssemblyInfo.cs
+/backend/backend/backend/obj/Debug/net8.0/backend.AssemblyInfoInputs.cache
+/backend/backend/.vs/backend/v17/DocumentLayout.backup.json
