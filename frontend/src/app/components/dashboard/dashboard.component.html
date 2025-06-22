@@ -1,0 +1,97 @@
+<div class="dashboard-container">
+  <!-- Header with Role Toggle -->
+  <div class="header">
+    <h1>Property Maintenance Management System</h1>
+    <div class="role-section">
+      <span class="role-label">Current Role: <strong>{{ getRoleName() }}</strong></span>
+      <button class="btn btn-primary role-toggle" (click)="toggleRole()">
+        Switch to {{ isAdmin() ? 'Property Manager' : 'Admin' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filters-section">
+    <div class="form-group search-field">
+      <label for="search">Search maintenance requests</label>
+      <input 
+        id="search"
+        type="text" 
+        class="form-control" 
+        [(ngModel)]="searchTerm" 
+        (keyup.enter)="onSearch()" 
+        placeholder="Search by name, property, or description">
+    </div>
+
+    <div class="form-group status-filter">
+      <label for="status">Filter by Status</label>
+      <select id="status" class="form-control" [(ngModel)]="selectedStatus" (change)="onStatusFilter()">
+        <option [ngValue]="null">All</option>
+        <option [ngValue]="MaintenanceStatus.New">New</option>
+        <option [ngValue]="MaintenanceStatus.Accepted">Accepted</option>
+        <option [ngValue]="MaintenanceStatus.Rejected">Rejected</option>
+      </select>
+    </div>
+
+    <button class="btn btn-success add-button" (click)="openAddForm()">
+      ➕ Add Maintenance Request
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading maintenance requests...</p>
+  </div>
+
+  <!-- Maintenance Requests Grid -->
+  <div *ngIf="!loading" class="requests-grid">
+    <div 
+      *ngFor="let request of filteredRequests" 
+      class="request-card" 
+      (click)="openEditForm(request)">
+      
+      <div class="card-header">
+        <h3>{{ request.maintenanceEventName }}</h3>
+        <h4>{{ request.propertyName }}</h4>
+      </div>
+
+      <div class="card-content">
+        <p class="description">{{ request.description }}</p>
+        
+        <div class="status-container">
+          <span class="status-badge" [class]="getStatusClass(request.status)">
+            {{ getStatusText(request.status) }}
+          </span>
+        </div>
+
+        <div *ngIf="request.imageData" class="image-container">
+          <img [src]="'data:image/jpeg;base64,' + request.imageData" 
+               [alt]="request.imageFileName" 
+               class="maintenance-image">
+        </div>
+
+        <div class="metadata">
+          <small>Created: {{ request.createdDate | date:'medium' }}</small>
+          <small *ngIf="request.updatedDate">Updated: {{ request.updatedDate | date:'medium' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results Message -->
+  <div *ngIf="!loading && filteredRequests.length === 0" class="no-results">
+    <div class="no-results-icon">📭</div>
+    <h3>No maintenance requests found</h3>
+    <p>Try adjusting your search criteria or add a new maintenance request.</p>
+  </div>
+</div>
+
+<!-- Maintenance Form Modal -->
+<app-maintenance-form 
+  *ngIf="showForm"
+  [requestId]="selectedRequestId"
+  [currentRole]="currentRole"
+  (formClosed)="closeForm()"
+  (formSubmitted)="onFormSubmitted()">
+</app-maintenance-form>
