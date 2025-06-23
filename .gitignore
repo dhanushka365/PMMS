@@ -2,23 +2,11 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/backend/backend/.vs/backend/DesignTimeBuild
-/backend/backend/.vs/ProjectEvaluation/backend.metadata.v9.bin
-/backend/backend/.vs/ProjectEvaluation/backend.projects.v9.bin
-/backend/backend/.vs/backend/v17/.suo
-/backend/backend/.vs/backend/v17/.futdcache.v2
 *.vsidx
-/backend/backend/backend/obj/Debug/net8.0/backend.AssemblyInfo.cs
-/backend/backend/backend/obj/Debug/net8.0/backend.AssemblyInfoInputs.cache
-/backend/backend/.vs/backend/v17/DocumentLayout.backup.json
-/backend/backend/backend/obj/backend.csproj.nuget.dgspec.json
-/backend/backend/backend/obj/backend.csproj.nuget.g.props
-/backend/backend/backend/obj/backend.csproj.nuget.g.targets
-/backend/backend/backend/obj/project.assets.json
-/backend/backend/backend/obj/project.nuget.cache
-/backend/backend/backend/obj/Debug/net8.0/backend.csproj.AssemblyReference.cache
-/backend/backend/backend/obj/Debug/net8.0/backend.assets.cache
 *.cache
 *.txt
 *.json
 
+/backend/backend/.vs
+/backend/backend/backend/obj
+/backend/backend/backend.Tests/.vs/backend.Tests/v17/.suo
