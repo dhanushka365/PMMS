@@ -5,7 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { MaintenanceRequestService } from '../../services/maintenance-request.service';
 import { UserRoleService } from '../../services/user-role.service';
-import { MaintenanceRequest, MaintenanceStatus, UserRole } from '../../models/maintenance-request.model';
+import { MaintenanceRequest, MaintenanceStatus, UserRole, UpdateMaintenanceRequest } from '../../models/maintenance-request.model';
 import { MaintenanceFormComponent } from '../maintenance-form/maintenance-form.component';
 
 @Component({
@@ -137,5 +137,63 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getRoleName(): string {
     return this.userRoleService.getRoleName();
+  }
+
+  quickUpdateStatus(request: MaintenanceRequest, newStatus: MaintenanceStatus, event: Event): void {
+    event.stopPropagation(); // Prevent opening the edit form
+    
+    const updateRequest: UpdateMaintenanceRequest = {
+      maintenanceEventName: request.maintenanceEventName,
+      propertyName: request.propertyName,
+      description: request.description,
+      status: newStatus,
+      imageFileName: request.imageFileName,
+      imageData: request.imageData,
+      updatedBy: 'admin@example.com'
+    };
+
+    console.log('Quick updating status for request:', request.id, 'to status:', newStatus);
+    
+    this.maintenanceService.updateMaintenanceRequest(request.id, updateRequest, this.currentRole)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (updatedRequest) => {
+          console.log('Status updated successfully:', updatedRequest);
+          this.loadMaintenanceRequests(); // Refresh the list
+        },
+        error: (error) => {
+          console.error('Error updating status:', error);
+          // You could add a toast notification here
+        }
+      });
+  }
+
+  canDeleteRequest(request: MaintenanceRequest): boolean {
+    // Only property managers can delete, and only when status is New
+    return this.currentRole === UserRole.PropertyManager && 
+           request.status === MaintenanceStatus.New;
+  }
+
+  confirmDeleteRequest(request: MaintenanceRequest, event: Event): void {
+    event.stopPropagation(); // Prevent opening the edit form
+    
+    if (confirm(`Are you sure you want to delete "${request.maintenanceEventName}"? This action cannot be undone.`)) {
+      this.deleteRequest(request.id);
+    }
+  }
+
+  private deleteRequest(id: number): void {
+    this.maintenanceService.deleteMaintenanceRequest(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          console.log('Request deleted successfully');
+          this.loadMaintenanceRequests(); // Refresh the list
+        },
+        error: (error) => {
+          console.error('Error deleting request:', error);
+          // You could add a toast notification here
+        }
+      });
   }
 }

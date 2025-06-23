@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Subject, takeUntil } from 'rxjs';
 
 import { MaintenanceRequestService } from '../../services/maintenance-request.service';
+import { UserRoleService } from '../../services/user-role.service';
 import { 
   MaintenanceRequest, 
   CreateMaintenanceRequest, 
@@ -45,13 +46,29 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private maintenanceService: MaintenanceRequestService
+    private maintenanceService: MaintenanceRequestService,
+    private userRoleService: UserRoleService
   ) {
     this.maintenanceForm = this.createForm();
   }
 
   ngOnInit(): void {
     this.isEditMode = this.requestId !== null;
+    
+    // Watch for role changes and update permissions accordingly
+    this.userRoleService.currentRole$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(role => {
+        this.currentRole = role;
+        this.updateAdminPermissions();
+        console.log('Role changed to:', role);
+      });
+    
+    // Enable status field for admin users right away
+    if (this.isAdmin() && this.isEditMode) {
+      this.maintenanceForm.get('status')?.enable();
+      console.log('Status field enabled for admin user in ngOnInit');
+    }
     
     if (this.isEditMode && this.requestId) {
       this.loadMaintenanceRequest(this.requestId);
@@ -64,12 +81,20 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
   }
 
   private createForm(): FormGroup {
-    return this.fb.group({
+    const form = this.fb.group({
       maintenanceEventName: ['', [Validators.required, Validators.maxLength(200)]],
       propertyName: ['', [Validators.required, Validators.maxLength(200)]],
       description: ['', [Validators.required, Validators.maxLength(1000)]],
       status: [{ value: MaintenanceStatus.New, disabled: true }]
     });
+
+    // Enable status field for admin users immediately if in edit mode
+    if (this.isAdmin() && this.isEditMode) {
+      form.get('status')?.enable();
+      console.log('Status field enabled for admin in createForm');
+    }
+
+    return form;
   }
 
   private loadMaintenanceRequest(id: number): void {
@@ -98,14 +123,26 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
       status: request.status
     });
 
-    // Enable status field for admin users
-    if (this.isAdmin()) {
-      this.maintenanceForm.get('status')?.enable();
-    }
+    // Re-evaluate admin permissions after form is populated
+    this.updateAdminPermissions();
 
     // Load existing image if available
     if (request.imageData) {
       this.imagePreview = `data:image/jpeg;base64,${request.imageData}`;
+    }
+
+    console.log('Form populated with request:', request);
+    console.log('Current user role:', this.currentRole);
+    console.log('Is admin:', this.isAdmin());
+  }
+
+  private updateAdminPermissions(): void {
+    if (this.isAdmin()) {
+      this.maintenanceForm.get('status')?.enable();
+      console.log('Admin status field enabled for editing');
+    } else {
+      this.maintenanceForm.get('status')?.disable();
+      console.log('Status field disabled for non-admin user');
     }
   }
 
@@ -172,6 +209,9 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
 
   private updateMaintenanceRequest(): void {
     const formValue = this.maintenanceForm.value;
+    console.log('Updating request with form value:', formValue);
+    console.log('Is admin?', this.isAdmin());
+    console.log('Current role:', this.currentRole);
     
     this.processImageAndSubmit(formValue, (imageData, fileName) => {
       const updateRequest: UpdateMaintenanceRequest = {
@@ -184,10 +224,14 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
         updatedBy: 'current-user@example.com' // In real app, get from auth service
       };
 
+      console.log('Update request payload:', updateRequest);
+      console.log('User role being sent:', this.currentRole);
+
       this.maintenanceService.updateMaintenanceRequest(this.requestId!, updateRequest, this.currentRole)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
+          next: (response) => {
+            console.log('Update response:', response);
             this.showMessage('Maintenance request updated successfully', 'success');
             this.loading = false;
             setTimeout(() => this.formSubmitted.emit(), 1500);
@@ -267,5 +311,41 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
       if (field.errors['maxlength']) return `Maximum ${field.errors['maxlength'].requiredLength} characters allowed`;
     }
     return '';
+  }
+
+  canDelete(): boolean {
+    // Only property managers can delete, and only when status is New
+    return this.isEditMode && 
+           this.currentRole === UserRole.PropertyManager && 
+           this.existingRequest?.status === MaintenanceStatus.New;
+  }
+
+  confirmDelete(): void {
+    if (this.requestId && this.existingRequest) {
+      const requestName = this.existingRequest.maintenanceEventName;
+      if (confirm(`Are you sure you want to delete "${requestName}"? This action cannot be undone.`)) {
+        this.deleteRequest();
+      }
+    }
+  }
+
+  private deleteRequest(): void {
+    if (!this.requestId) return;
+    
+    this.loading = true;
+    this.maintenanceService.deleteMaintenanceRequest(this.requestId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.showMessage('Maintenance request deleted successfully', 'success');
+          this.loading = false;
+          setTimeout(() => this.formSubmitted.emit(), 1500);
+        },
+        error: (error) => {
+          console.error('Error deleting maintenance request:', error);
+          this.showMessage('Error deleting maintenance request', 'error');
+          this.loading = false;
+        }
+      });
   }
 }

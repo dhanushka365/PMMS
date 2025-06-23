@@ -12,30 +12,35 @@
 
   <!-- Search and Filter Section -->
   <div class="filters-section">
-    <div class="form-group search-field">
-      <label for="search">Search maintenance requests</label>
-      <input 
-        id="search"
-        type="text" 
-        class="form-control" 
-        [(ngModel)]="searchTerm" 
-        (keyup.enter)="onSearch()" 
-        placeholder="Search by name, property, or description">
-    </div>
+    <div class="search-filter-row">
+      <div class="form-group search-field">
+        <label for="search">Search maintenance requests</label>
+        <input 
+          id="search"
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="onSearch()" 
+          placeholder="Search by name, property, or description">
+      </div>
 
-    <div class="form-group status-filter">
-      <label for="status">Filter by Status</label>
-      <select id="status" class="form-control" [(ngModel)]="selectedStatus" (change)="onStatusFilter()">
-        <option [ngValue]="null">All</option>
-        <option [ngValue]="MaintenanceStatus.New">New</option>
-        <option [ngValue]="MaintenanceStatus.Accepted">Accepted</option>
-        <option [ngValue]="MaintenanceStatus.Rejected">Rejected</option>
-      </select>
-    </div>
+      <div class="form-group status-filter">
+        <label for="status">Filter by Status</label>
+        <select id="status" class="form-control" [(ngModel)]="selectedStatus" (change)="onStatusFilter()">
+          <option [ngValue]="null">All</option>
+          <option [ngValue]="MaintenanceStatus.New">New</option>
+          <option [ngValue]="MaintenanceStatus.Accepted">Accepted</option>
+          <option [ngValue]="MaintenanceStatus.Rejected">Rejected</option>
+        </select>
+      </div>
 
-    <button class="btn btn-success add-button" (click)="openAddForm()">
-      ➕ Add Maintenance Request
-    </button>
+      <div class="form-group add-button-group">
+        <label class="invisible-label">Actions</label>
+        <button class="btn btn-success add-button" (click)="openAddForm()">
+          ➕ Add Maintenance Request
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading Spinner -->
@@ -52,8 +57,20 @@
       (click)="openEditForm(request)">
       
       <div class="card-header">
-        <h3>{{ request.maintenanceEventName }}</h3>
-        <h4>{{ request.propertyName }}</h4>
+        <div class="header-content">
+          <h3>{{ request.maintenanceEventName }}</h3>
+          <h4>{{ request.propertyName }}</h4>
+        </div>
+        
+        <!-- Property Manager delete button - top right -->
+        <div *ngIf="canDeleteRequest(request)" class="card-delete-action">
+          <button 
+            class="btn-delete-card" 
+            (click)="confirmDeleteRequest(request, $event)"
+            title="Delete Request">
+            <span class="delete-icon">🗑️</span>
+          </button>
+        </div>
       </div>
 
       <div class="card-content">
@@ -63,6 +80,22 @@
           <span class="status-badge" [class]="getStatusClass(request.status)">
             {{ getStatusText(request.status) }}
           </span>
+          
+          <!-- Admin quick action buttons -->
+          <div *ngIf="isAdmin() && request.status === MaintenanceStatus.New" class="admin-actions">
+            <button 
+              class="btn btn-accept" 
+              (click)="quickUpdateStatus(request, MaintenanceStatus.Accepted, $event)"
+              title="Accept Request">
+              ✓ Accept
+            </button>
+            <button 
+              class="btn btn-reject" 
+              (click)="quickUpdateStatus(request, MaintenanceStatus.Rejected, $event)"
+              title="Reject Request">
+              ✗ Reject
+            </button>
+          </div>
         </div>
 
         <div *ngIf="request.imageData" class="image-container">

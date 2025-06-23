@@ -277,11 +277,22 @@ textarea.form-control {
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   gap: 12px;
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid #e2e8f0;
+}
+
+.left-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.right-actions {
+  display: flex;
+  gap: 12px;
 }
 
 /* Responsive Design */
@@ -321,9 +332,16 @@ textarea.form-control {
   }
   
   .form-actions {
-    flex-direction: column-reverse;
+    flex-direction: column;
     margin-top: 16px;
     padding-top: 16px;
+    gap: 16px;
+  }
+  
+  .left-actions,
+  .right-actions {
+    flex-direction: column;
+    width: 100%;
   }
   
   .form-actions .btn {
@@ -350,4 +368,31 @@ textarea.form-control {
   .upload-placeholder p {
     font-size: 14px;
   }
+}
+
+/* Admin-specific styles */
+.admin-field {
+  color: #2563eb !important;
+  font-weight: 600;
+}
+
+.admin-enabled {
+  border: 2px solid #2563eb !important;
+  background-color: #eff6ff !important;
+}
+
+.admin-enabled:focus {
+  border-color: #1d4ed8 !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.admin-hint {
+  color: #2563eb !important;
+  font-weight: 500;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
 }
