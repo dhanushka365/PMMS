@@ -20,6 +20,5 @@
 /backend/backend/backend/obj/Debug/net8.0/backend.assets.cache
 *.cache
 *.txt
-*.cs
 *.json
 
