@@ -22,16 +22,4 @@
 *.txt
 *.cs
 *.json
-/backend/backend/.vs/backend/v17/DocumentLayout.json
-/backend/backend/backend/bin/Debug/net8.0
-/backend/backend/backend/obj/Debug/net8.0
-/backend/backend/.vs/backend/config/applicationhost.config
-/backend/backend/backend/bin/Debug/net7.0
-/backend/backend/.vs/ProjectEvaluation/backend.strings.v9.bin
-/backend/backend/backend/obj/Debug/net7.0
-/backend/backend/backend.Tests/.vs/backend.Tests/DesignTimeBuild
-/backend/backend/backend.Tests/.vs/backend.Tests/v17/TestStore/0
-/backend/backend/backend.Tests/.vs/backend.Tests/v17
-/backend/backend/backend.Tests/.vs/ProjectEvaluation
-/backend/backend/backend.Tests/bin/Debug/net7.0
-/backend/backend/backend.Tests/obj
+
