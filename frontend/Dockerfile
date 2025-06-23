@@ -12,8 +12,8 @@ RUN npm ci
 # Copy the source code
 COPY . .
 
-# Build the Angular application for Docker deployment
-RUN npm run build --configuration=docker
+# Build the Angular application for Docker deployment without SSR
+RUN npm run build -- --configuration=docker --prerender=false --ssr=false
 
 # Stage 2: Serve the application using Nginx
 FROM nginx:alpine AS production

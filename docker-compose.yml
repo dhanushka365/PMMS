@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend/backend/backend
+      dockerfile: Dockerfile
+    container_name: pmms-backend
+    ports:
+      - "5000:5000"  # Fixed port mapping
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    networks:
+      - pmms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/maintenancerequests"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Angular Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pmms-frontend
+    ports:
+      - "4200:4200"  # Fixed port mapping
+    depends_on:
+      - backend
+    networks:
+      - pmms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  pmms-network:
+    driver: bridge
+
+# Optional: Add volumes for persistent data if needed
+# volumes:
+#   pmms-data:

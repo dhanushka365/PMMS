@@ -26,7 +26,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
         builder => builder
-            .WithOrigins("http://localhost:4200", "http://localhost:4300", "https://localhost:4200", "https://localhost:4300", "http://frontend:4200")
+            .SetIsOriginAllowed(origin => 
+            {
+                if (string.IsNullOrEmpty(origin)) return false;
+                var uri = new Uri(origin);
+                return uri.Host == "localhost" || uri.Host == "127.0.0.1" || uri.Host == "frontend";
+            })
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
@@ -55,7 +60,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Commented out for development to allow HTTP
 
 app.UseCors("AllowAngularApp");
 

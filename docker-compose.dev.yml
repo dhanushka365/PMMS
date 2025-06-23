@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Backend API Service for Development
+  backend-dev:
+    build:
+      context: ./backend/backend/backend
+      dockerfile: Dockerfile
+    container_name: pmms-backend-dev
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    volumes:
+      - ./backend/backend/backend:/app/source  # Mount source for hot reload
+    networks:
+      - pmms-dev-network
+    restart: unless-stopped
+
+  # Frontend Development Service
+  frontend-dev:
+    image: node:18-alpine
+    container_name: pmms-frontend-dev
+    working_dir: /app
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+    command: >
+      sh -c "npm install && 
+             cp src/environments/environment.docker.ts src/environments/environment.ts &&
+             ng serve --host 0.0.0.0 --port 4200 --poll 2000"
+    depends_on:
+      - backend-dev
+    networks:
+      - pmms-dev-network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+
+networks:
+  pmms-dev-network:
+    driver: bridge
