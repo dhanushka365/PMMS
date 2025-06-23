@@ -396,3 +396,52 @@ textarea.form-control {
   color: #64748b;
   margin-top: 4px;
 }
+
+/* Warning message styles */
+.message-warning {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+}
+
+.message-info {
+  background-color: #dbeafe;
+  border: 1px solid #3b82f6;
+  color: #1d4ed8;
+}
+
+.warning-icon {
+  margin-right: 8px;
+}
+
+.info-icon {
+  margin-right: 8px;
+}
+
+/* Read-only field styles */
+.form-control[readonly] {
+  background-color: #f8fafc;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* No image message for read-only mode */
+.no-image-message {
+  text-align: center;
+  padding: 40px 20px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  color: #6b7280;
+}
+
+.no-image-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.no-image-message p {
+  margin: 0;
+  font-size: 14px;
+}

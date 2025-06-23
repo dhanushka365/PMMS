@@ -12,6 +12,12 @@
       {{ message }}
     </div>
 
+    <!-- Restriction Message for Property Managers -->
+    <div *ngIf="getFormMessage()" class="message message-info">
+      <span class="info-icon">ℹ️</span>
+      {{ getFormMessage() }}
+    </div>
+
     <div *ngIf="loading" class="loading-container">
       <div class="spinner"></div>
       <p>{{ isEditMode ? 'Loading request...' : 'Saving request...' }}</p>
@@ -25,6 +31,7 @@
           type="text" 
           class="form-control"
           [class.error]="hasError('maintenanceEventName')"
+          [readonly]="!canEditAsPropertyManager()"
           formControlName="maintenanceEventName" 
           placeholder="Enter maintenance event name">
         <div *ngIf="hasError('maintenanceEventName')" class="error-message">
@@ -39,6 +46,7 @@
           type="text" 
           class="form-control"
           [class.error]="hasError('propertyName')"
+          [readonly]="!canEditAsPropertyManager()"
           formControlName="propertyName" 
           placeholder="Enter property name">
         <div *ngIf="hasError('propertyName')" class="error-message">
@@ -52,6 +60,7 @@
           id="description"
           class="form-control"
           [class.error]="hasError('description')"
+          [readonly]="!canEditAsPropertyManager()"
           formControlName="description" 
           placeholder="Describe the maintenance issue" 
           rows="4"></textarea>
@@ -79,24 +88,30 @@
       </div>
 
       <div class="form-group">
-        <label>Image (Optional)</label>
+        <label>{{ canEditAsPropertyManager() ? 'Image (Optional)' : 'Attached Image' }}</label>
         
         <div class="image-upload-area">
           <input type="file" 
                  #fileInput 
                  (change)="onFileSelected($event)" 
                  accept="image/*" 
+                 [disabled]="!canEditAsPropertyManager()"
                  style="display: none;">
           
-          <div *ngIf="!imagePreview" class="upload-placeholder" (click)="fileInput.click()">
+          <div *ngIf="!imagePreview && canEditAsPropertyManager()" class="upload-placeholder" (click)="fileInput.click()">
             <div class="upload-icon">📁</div>
             <p>Click to upload an image</p>
             <small>JPG, PNG, GIF up to 5MB</small>
           </div>
 
+          <div *ngIf="!imagePreview && !canEditAsPropertyManager()" class="no-image-message">
+            <div class="no-image-icon">🖼️</div>
+            <p>No image attached to this request</p>
+          </div>
+
           <div *ngIf="imagePreview" class="image-preview-container">
             <img [src]="imagePreview" alt="Preview" class="image-preview">
-            <div class="image-actions">
+            <div class="image-actions" *ngIf="canEditAsPropertyManager()">
               <button type="button" class="btn btn-secondary btn-sm" (click)="fileInput.click()">
                 Change
               </button>
@@ -121,9 +136,10 @@
         </div>
         <div class="right-actions">
           <button type="button" class="btn btn-secondary" (click)="closeForm()">
-            Cancel
+            {{ canEditAsPropertyManager() ? 'Cancel' : 'Close' }}
           </button>
           <button type="submit" 
+                  *ngIf="canEditAsPropertyManager()"
                   class="btn btn-primary" 
                   [disabled]="maintenanceForm.invalid || loading">
             {{ getSubmitButtonText() }}

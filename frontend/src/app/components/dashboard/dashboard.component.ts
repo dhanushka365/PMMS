@@ -168,6 +168,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
 
+  canEditRequest(request: MaintenanceRequest): boolean {
+    // Admins can always edit any request
+    if (this.isAdmin()) {
+      return true;
+    }
+    
+    // Property managers can only edit requests with "New" status
+    return request.status === MaintenanceStatus.New;
+  }
+
+  openEditFormIfAllowed(request: MaintenanceRequest): void {
+    // Always allow opening the form to view details
+    // The form itself will handle edit restrictions
+    this.openEditForm(request);
+  }
+
   canDeleteRequest(request: MaintenanceRequest): boolean {
     // Only property managers can delete, and only when status is New
     return this.currentRole === UserRole.PropertyManager && 

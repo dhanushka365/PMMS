@@ -533,3 +533,22 @@ label {
 .btn-delete-card:hover .delete-icon {
   transform: rotate(15deg);
 }
+
+/* View-only indicator */
+.view-only-indicator {
+  font-size: 12px;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  margin-top: 4px;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-only-indicator:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+}

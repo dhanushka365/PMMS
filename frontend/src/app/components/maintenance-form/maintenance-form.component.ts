@@ -292,7 +292,13 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
   }
 
   getFormTitle(): string {
-    return this.isEditMode ? 'Edit Maintenance Request' : 'Add New Maintenance Request';
+    if (this.isEditMode) {
+      if (!this.canEditAsPropertyManager()) {
+        return 'View Maintenance Request (Read Only)';
+      }
+      return 'Edit Maintenance Request';
+    }
+    return 'Add New Maintenance Request';
   }
 
   getSubmitButtonText(): string {
@@ -318,6 +324,23 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
     return this.isEditMode && 
            this.currentRole === UserRole.PropertyManager && 
            this.existingRequest?.status === MaintenanceStatus.New;
+  }
+
+  canEditAsPropertyManager(): boolean {
+    // Property managers can only edit requests with "New" status
+    if (this.currentRole === UserRole.PropertyManager && this.existingRequest) {
+      return this.existingRequest.status === MaintenanceStatus.New;
+    }
+    return true; // Admins can edit any request, or if it's a new request
+  }
+
+  getFormMessage(): string {
+    if (this.currentRole === UserRole.PropertyManager && 
+        this.existingRequest && 
+        this.existingRequest.status !== MaintenanceStatus.New) {
+      return `This request has been ${this.existingRequest.status === MaintenanceStatus.Accepted ? 'accepted' : 'rejected'} by an admin. You can view the details but cannot make changes.`;
+    }
+    return '';
   }
 
   confirmDelete(): void {

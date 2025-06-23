@@ -34,7 +34,7 @@
         </select>
       </div>
 
-      <div class="form-group add-button-group">
+      <div class="form-group add-button-group" *ngIf="!isAdmin()">
         <label class="invisible-label">Actions</label>
         <button class="btn btn-success add-button" (click)="openAddForm()">
           ➕ Add Maintenance Request
@@ -54,7 +54,7 @@
     <div 
       *ngFor="let request of filteredRequests" 
       class="request-card" 
-      (click)="openEditForm(request)">
+      (click)="openEditFormIfAllowed(request)">
       
       <div class="card-header">
         <div class="header-content">
@@ -79,6 +79,11 @@
         <div class="status-container">
           <span class="status-badge" [class]="getStatusClass(request.status)">
             {{ getStatusText(request.status) }}
+          </span>
+          
+          <!-- Show view-only indicator for non-editable requests -->
+          <span *ngIf="!canEditRequest(request) && !isAdmin()" class="view-only-indicator" title="Click to view details - Cannot edit as admin has processed this request">
+            👁️ View Only
           </span>
           
           <!-- Admin quick action buttons -->
