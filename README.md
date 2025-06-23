@@ -2,6 +2,62 @@
 
 A comprehensive web application for managing property maintenance requests with role-based access control, built with Angular frontend and .NET Core backend.
 
+## 📸 UI Screenshots & Application Workflow
+
+### 🏠 Property Manager Interface
+
+#### Dashboard Overview
+![Property Manager Dashboard](./UI-Screenshots/property%20Manager%20dashbaord%20view.png)
+*Property Manager dashboard with role indicator, search/filter functionality, and maintenance request cards*
+
+#### Creating New Requests
+![Create Maintenance Request](./UI-Screenshots/property%20manager%20create%20a%20maintenance%20request.png)
+*Comprehensive form for creating maintenance requests with image upload, validation, and rich text descriptions*
+
+#### Request Management
+![New Request Listed](./UI-Screenshots/After%20create%20the%20maintenace%20request%20newly%20create%20job%20will%20listed%20in%20main%20dashboard.%20still%20property%20manager%20can%20delete%20or%20edit%20it%20untill%20admin%20or%20accept%20or%20reject%20it..png)
+*Newly created requests appear immediately on dashboard - Property Manager maintains full control until admin processing*
+
+![New Status Indicator](./UI-Screenshots/newly%20create%20job%20is%20still%20in%20new%20status.png)
+*Clear status indicators and action buttons - delete option available for "New" status requests*
+
+### 👨‍💼 Admin Interface
+
+#### Admin Dashboard
+![Admin Dashboard](./UI-Screenshots/Admin%20dashboard%20view.png)
+*Admin dashboard with quick action buttons for efficient request processing - no "Add Request" button for admins*
+
+#### Request Processing
+![Admin Accept Request](./UI-Screenshots/admin%20accept%20the%20job.png)
+*Quick action buttons allow admins to Accept or Reject requests directly from the dashboard*
+
+#### Admin Edit Capabilities
+![Admin Edit Details](./UI-Screenshots/admin%20can%20still%20correct%20the%20request%20details%20if%20he%20need.png)
+*Admins retain full edit access to all requests regardless of status for corrections and updates*
+
+### 🔒 Access Control Demonstration
+
+#### View-Only Access for Processed Requests
+![Property Manager View Only](./UI-Screenshots/once%20admin%20accept%20the%20job%20property%20manger%20can%20only%20view%20it.png)
+*Once admin processes a request, Property Manager gets read-only access with "👁️ View Only" indicator*
+
+### 🔄 Complete Workflow Summary
+
+1. **Property Manager Creates Request** → Form with validation and image upload
+2. **Request Appears on Dashboard** → "New" status with edit/delete options
+3. **Admin Reviews & Processes** → Quick Accept/Reject buttons
+4. **Status Changes to Accepted/Rejected** → Property Manager loses edit access
+5. **View-Only Mode Activated** → Complete details visible but not editable
+
+### 🎨 UI/UX Features Demonstrated
+
+- **Role-Based Navigation**: Different interfaces for Property Manager vs Admin
+- **Status-Driven Actions**: Buttons and options change based on request status
+- **Visual Indicators**: Clear status badges, role indicators, and action cues
+- **Professional Design**: Navy header, green gradient buttons, modern card layout
+- **Responsive Layout**: Clean, organized interface that works on all screen sizes
+- **Access Control Visualization**: "View Only" badges and disabled states
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -21,14 +77,51 @@ A comprehensive web application for managing property maintenance requests with 
    ```
 
 3. **Access the application**
-   - Frontend: http://localhost:4200
-   - Backend API: http://localhost:5110
-   - Swagger Documentation: http://localhost:5110/swagger
+   - **Frontend**: http://localhost:4200
+   - **Backend API**: http://localhost:5110
+   - **Swagger Documentation**: http://localhost:5110/swagger (Interactive API testing)
+   - **API Health Check**: http://localhost:5110/api/maintenancerequests
 
 4. **Stop the application**
    ```bash
    docker-compose down
    ```
+
+## ✨ Key Features
+
+### 🎭 **Role-Based Access Control**
+- **Property Manager Role**: Create, edit (New status only), delete (New status only)
+- **Admin Role**: Process requests, full edit access, status management
+- **Visual Role Indicators**: Clear role display with easy switching
+
+### 🎨 **Modern User Interface**
+- **Professional Design**: Navy blue header with green gradient action buttons
+- **Responsive Layout**: Works seamlessly on desktop, tablet, and mobile
+- **Intuitive Navigation**: Role-specific interfaces and contextual actions
+- **Visual Status Indicators**: Color-coded status badges and "View Only" markers
+
+### 🔄 **Smart Workflow Management**
+- **Request Lifecycle**: New → Accepted/Rejected with proper state transitions
+- **Dynamic Actions**: Buttons and options change based on user role and request status
+- **Quick Actions**: One-click Accept/Reject buttons for efficient admin processing
+- **View-Only Access**: Property managers can view but not edit processed requests
+
+### 📝 **Rich Form Capabilities**
+- **Comprehensive Forms**: Detailed maintenance request creation with validation
+- **Image Upload**: Attach photos to maintenance requests
+- **Real-time Validation**: Client-side form validation with helpful error messages
+- **Auto-save Draft**: Form state preservation during navigation
+
+### 🔍 **Advanced Search & Filtering**
+- **Real-time Search**: Instant filtering across request names, properties, and descriptions
+- **Status Filtering**: Filter by New, Accepted, or Rejected status
+- **Combined Filtering**: Search and status filters work together
+
+### 🛡️ **Security & Data Protection**
+- **Role Validation**: Server-side permission checking
+- **Input Sanitization**: Protection against XSS and injection attacks
+- **Audit Trail**: Complete history of who created and modified requests
+- **Secure Communication**: HTTPS support and CORS protection
 
 ## 🏗️ Architecture Overview
 
@@ -141,8 +234,9 @@ The application implements a two-tier role system:
    dotnet run --launch-profile https
    ```
 5. **Access**:
-   - API: https://localhost:7127
-   - Swagger: https://localhost:7127/swagger
+   - **API**: https://localhost:7127
+   - **Swagger UI**: https://localhost:7127/swagger (Interactive API documentation)
+   - **Health Check**: https://localhost:7127/api/maintenancerequests
 
 ### Frontend Development
 1. **Prerequisites**: Node.js 18+, npm
@@ -172,19 +266,53 @@ export const environment = {
 ## 🧪 Testing
 
 ### Manual Testing Workflow
-1. **Switch to Property Manager role**
-2. **Create a maintenance request**
-3. **Switch to Admin role**
-4. **Accept or reject the request**
-5. **Switch back to Property Manager**
-6. **Verify read-only access to processed request**
+Follow this complete workflow to test all application features:
+
+#### 1. **Property Manager Workflow**
+1. **Start as Property Manager** (default role)
+2. **Create a New Request**:
+   - Click the green "➕ Add Maintenance Request" button
+   - Fill in all required fields (Event Name, Property, Description)
+   - Optionally upload an image
+   - Submit the form
+3. **Verify Dashboard Updates**:
+   - New request appears with "New" status badge
+   - 🗑️ Delete button visible in top-right corner
+   - Request card is clickable for editing
+
+#### 2. **Admin Processing Workflow**
+1. **Switch to Admin Role**:
+   - Click "Switch to Admin" button (header turns navy blue)
+   - Notice "Add Maintenance Request" button disappears
+2. **Process the Request**:
+   - Locate the request with "New" status
+   - Use green "✓ Accept" or red "✗ Reject" quick action buttons
+   - Verify status badge updates immediately
+
+#### 3. **View-Only Access Verification**
+1. **Switch back to Property Manager**
+2. **Attempt to Access Processed Request**:
+   - Click on the processed request card
+   - Verify "👁️ View Only" indicator in top-right corner
+   - Confirm form opens in read-only mode with informational message
+   - All fields should be grayed out and non-editable
+   - Only "Close" button available (no Save/Update)
 
 ### Key Test Scenarios
-- Role switching and permissions
-- CRUD operations with role restrictions
-- Form validation and error handling
-- Responsive design on different screen sizes
-- Docker container deployment
+- **Role Switching**: Verify UI changes between Property Manager and Admin views
+- **Permission Enforcement**: Confirm edit/delete restrictions work properly
+- **Status Workflow**: Test complete request lifecycle from creation to processing
+- **Responsive Design**: Test on different screen sizes and devices
+- **Form Validation**: Verify required field validation and error messages
+- **Image Upload**: Test image attachment and display functionality
+
+### UI/UX Testing Checklist
+- ✅ **Role Indicators**: Clear role display in header
+- ✅ **Visual Feedback**: Hover effects, button states, loading indicators
+- ✅ **Status Badges**: Color-coded status indicators (New, Accepted, Rejected)
+- ✅ **Action Buttons**: Context-sensitive buttons based on role and status
+- ✅ **Responsive Layout**: Mobile, tablet, and desktop compatibility
+- ✅ **Accessibility**: Proper labels, keyboard navigation, screen reader support
 
 ## 🚀 Deployment
 
@@ -212,17 +340,194 @@ docker-compose down
 
 ## 📚 API Documentation
 
-### Main Endpoints
-- `GET /api/maintenancerequests` - List all requests
-- `GET /api/maintenancerequests/{id}` - Get specific request
-- `POST /api/maintenancerequests` - Create new request
-- `PUT /api/maintenancerequests/{id}` - Update request
-- `DELETE /api/maintenancerequests/{id}` - Delete request
+### 🔗 Swagger UI Interface
+![Swagger API Documentation](./UI-Screenshots/backend%20swager%20UI%20Api%20documentaion.png)
+*Comprehensive API documentation with interactive testing capabilities*
 
-### Query Parameters
-- `searchTerm` - Filter by text search
-- `status` - Filter by status (0=New, 1=Accepted, 2=Rejected)
-- `userRole` - Specify user role for permission validation
+### 🌐 Accessing API Documentation
+- **Local Development**: https://localhost:7127/swagger
+- **Docker Deployment**: http://localhost:5110/swagger
+- **Interactive Testing**: All endpoints can be tested directly from the Swagger UI
+
+### 📋 Available Endpoints
+
+#### **Maintenance Requests API**
+```
+GET    /api/MaintenanceRequests              # Get all maintenance requests
+GET    /api/MaintenanceRequests?searchTerm={term}  # Search by text
+GET    /api/MaintenanceRequests?status={0|1|2}     # Filter by status (0=New, 1=Accepted, 2=Rejected)
+GET    /api/MaintenanceRequests/{id}         # Get specific request by ID
+POST   /api/MaintenanceRequests              # Create new maintenance request
+PUT    /api/MaintenanceRequests/{id}         # Update existing request
+DELETE /api/MaintenanceRequests/{id}         # Delete maintenance request
+```
+
+### 📝 Request/Response Examples
+
+#### **Create Maintenance Request**
+```http
+POST /api/MaintenanceRequests
+Content-Type: application/json
+
+{
+  "maintenanceEventName": "Broken Window",
+  "propertyName": "Apartment 205",
+  "description": "Bedroom window glass is cracked and needs replacement",
+  "imageFileName": "broken_window.jpg",
+  "imageData": "base64_encoded_image_data...",
+  "createdBy": "property.manager@company.com"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "maintenanceEventName": "Broken Window",
+  "propertyName": "Apartment 205",
+  "description": "Bedroom window glass is cracked and needs replacement",
+  "status": 0,
+  "imageFileName": "broken_window.jpg",
+  "imageData": "base64_encoded_image_data...",
+  "createdDate": "2024-01-15T10:30:00Z",
+  "updatedDate": null,
+  "createdBy": "property.manager@company.com",
+  "updatedBy": null
+}
+```
+
+#### **Update Request Status (Admin Only)**
+```http
+PUT /api/MaintenanceRequests/1?userRole=1
+Content-Type: application/json
+
+{
+  "maintenanceEventName": "Broken Window",
+  "propertyName": "Apartment 205", 
+  "description": "Bedroom window glass is cracked and needs replacement",
+  "status": 1,
+  "updatedBy": "admin@company.com"
+}
+```
+
+#### **Search and Filter Examples**
+```http
+# Search by text
+GET /api/MaintenanceRequests?searchTerm=window
+
+# Filter by status (New requests only)
+GET /api/MaintenanceRequests?status=0
+
+# Combined search and filter
+GET /api/MaintenanceRequests?searchTerm=plumbing&status=1
+```
+
+### 🔐 Authentication & Authorization
+
+#### **User Role Parameter**
+Most endpoints accept an optional `userRole` query parameter:
+- `0` = Property Manager (default)
+- `1` = Admin
+
+```http
+# Property Manager update (can only edit basic fields)
+PUT /api/MaintenanceRequests/1?userRole=0
+
+# Admin update (can change status and all fields)
+PUT /api/MaintenanceRequests/1?userRole=1
+```
+
+#### **Role-Based Permissions**
+| Endpoint | Property Manager | Admin |
+|----------|------------------|-------|
+| GET (all) | ✅ View all | ✅ View all |
+| GET (single) | ✅ View details | ✅ View details |
+| POST (create) | ✅ Create new | ❌ Cannot create |
+| PUT (update) | ✅ Edit New status only | ✅ Edit all |
+| PUT (status change) | ❌ Cannot change status | ✅ Accept/Reject |
+| DELETE | ✅ Delete New status only | ❌ Cannot delete |
+
+### 📊 Status Codes & Error Handling
+
+#### **HTTP Status Codes**
+- `200 OK` - Successful GET, PUT operations
+- `201 Created` - Successful POST operation
+- `204 No Content` - Successful DELETE operation
+- `400 Bad Request` - Validation errors, invalid input
+- `404 Not Found` - Resource not found
+- `500 Internal Server Error` - Server-side errors
+
+#### **Error Response Format**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "MaintenanceEventName": ["The MaintenanceEventName field is required."],
+    "PropertyName": ["The PropertyName field is required."]
+  }
+}
+```
+
+### 🧪 Testing with Swagger UI
+
+#### **Interactive Testing Features**
+1. **Try It Out**: Click any endpoint to test with real data
+2. **Parameter Input**: Fill in required and optional parameters
+3. **Request Body**: JSON editor with syntax highlighting
+4. **Response Preview**: See actual API responses
+5. **Authentication**: Test with different user roles
+6. **Schema Documentation**: Detailed model definitions
+
+#### **Common Test Scenarios**
+1. **Create Request**: Use POST endpoint with sample data
+2. **List Requests**: GET all requests to see created data
+3. **Filter by Status**: Test status filtering (0, 1, 2)
+4. **Search Functionality**: Test text search across fields
+5. **Role-Based Updates**: Compare Property Manager vs Admin permissions
+6. **Error Handling**: Test with invalid data to see error responses
+
+### 🔧 API Configuration
+
+#### **CORS Settings**
+The API is configured to accept requests from:
+- `http://localhost:4200` (Angular dev server)
+- `http://localhost:*` (Any localhost port for development)
+- Frontend container in Docker network
+
+#### **Content Types**
+- **Request**: `application/json`
+- **Response**: `application/json`
+- **Image Data**: Base64 encoded strings within JSON
+
+#### **Validation Rules**
+- **MaintenanceEventName**: Required, max 200 characters
+- **PropertyName**: Required, max 200 characters  
+- **Description**: Required, max 1000 characters
+- **ImageData**: Optional, Base64 encoded
+- **Status**: Enum (0=New, 1=Accepted, 2=Rejected)
+
+### 📖 API Design Principles
+
+#### **RESTful Design**
+- Resource-based URLs (`/api/MaintenanceRequests`)
+- HTTP verbs for actions (GET, POST, PUT, DELETE)
+- Proper status codes for different outcomes
+- Consistent JSON request/response format
+
+#### **Role-Based Security**
+- Server-side permission validation
+- Role parameter for context-aware operations
+- Status-based access control (e.g., only New requests can be deleted)
+
+#### **Developer Experience**
+- Comprehensive Swagger documentation
+- Interactive API testing
+- Clear error messages with validation details
+- Consistent naming conventions and structure
+
+The Swagger UI provides a complete, interactive documentation experience that allows developers to understand, test, and integrate with the PMMS API efficiently.
 
 ## 🛠️ Future Improvements
 
@@ -296,6 +601,25 @@ With more time, the following enhancements could be implemented:
 ## 📄 License
 
 This project is licensed under the MIT License.
+
+## 📸 Screenshot Reference
+
+All UI screenshots are located in the `UI-Screenshots/` directory and demonstrate:
+
+### **Application Interface**
+- **property Manager dashbaord view.png**: Main dashboard with role switching and request overview
+- **property manager create a maintenance request.png**: Comprehensive form with validation and image upload
+- **After create the maintenace request newly create job will listed in main dashboard...png**: Request lifecycle and status management
+- **newly create job is still in new status.png**: Status indicators and available actions
+- **Admin dashboard view.png**: Admin interface with processing capabilities
+- **admin accept the job.png**: Quick action buttons for efficient request processing
+- **admin can still correct the request details if he need.png**: Admin edit capabilities
+- **once admin accept the job property manger can only view it.png**: Role-based access control in action
+
+### **API Documentation**
+- **backend swager UI Api documentaion.png**: Interactive Swagger UI showing all available endpoints, request/response schemas, and testing capabilities
+
+These screenshots provide a complete visual walkthrough of both the user interface and API documentation, demonstrating the professional, developer-friendly design of the PMMS application.
 
 ---
 
