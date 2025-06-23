@@ -62,14 +62,23 @@
           <h4>{{ request.propertyName }}</h4>
         </div>
         
-        <!-- Property Manager delete button - top right -->
-        <div *ngIf="canDeleteRequest(request)" class="card-delete-action">
-          <button 
-            class="btn-delete-card" 
-            (click)="confirmDeleteRequest(request, $event)"
-            title="Delete Request">
-            <span class="delete-icon">🗑️</span>
-          </button>
+        <div class="card-top-right-actions">
+          <!-- Property Manager delete button -->
+          <div *ngIf="canDeleteRequest(request)" class="card-delete-action">
+            <button 
+              class="btn-delete-card" 
+              (click)="confirmDeleteRequest(request, $event)"
+              title="Delete Request">
+              <span class="delete-icon">🗑️</span>
+            </button>
+          </div>
+          
+          <!-- View-only indicator for processed requests -->
+          <div *ngIf="!canEditRequest(request) && !isAdmin()" class="card-view-only-action">
+            <span class="view-only-card-indicator" title="Click to view details - Cannot edit as admin has processed this request">
+              👁️ View Only
+            </span>
+          </div>
         </div>
       </div>
 
@@ -79,11 +88,6 @@
         <div class="status-container">
           <span class="status-badge" [class]="getStatusClass(request.status)">
             {{ getStatusText(request.status) }}
-          </span>
-          
-          <!-- Show view-only indicator for non-editable requests -->
-          <span *ngIf="!canEditRequest(request) && !isAdmin()" class="view-only-indicator" title="Click to view details - Cannot edit as admin has processed this request">
-            👁️ View Only
           </span>
           
           <!-- Admin quick action buttons -->
