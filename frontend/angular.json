@@ -50,6 +50,32 @@
               ],
               "outputHashing": "all"
             },
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "extractLicenses": true,
+              "sourceMap": false,
+              "prerender": false,
+              "ssr": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -96,5 +122,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "5b7a247d-e423-43f9-a20e-a1f96a1ddc0e"
   }
 }
