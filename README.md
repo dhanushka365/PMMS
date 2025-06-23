@@ -341,7 +341,7 @@ The application implements a two-tier role system:
 ## 🔧 Development Setup
 
 ### Backend Development
-1. **Prerequisites**: .NET 8 SDK
+1. **Prerequisites**: .NET 7 SDK
 2. **Navigate to backend directory**:
    ```bash
    cd backend/backend/backend
