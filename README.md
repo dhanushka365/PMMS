@@ -619,8 +619,6 @@ All UI screenshots are located in the `UI-Screenshots/` directory and demonstrat
 ### **API Documentation**
 - **backend swager UI Api documentaion.png**: Interactive Swagger UI showing all available endpoints, request/response schemas, and testing capabilities
 
-These screenshots provide a complete visual walkthrough of both the user interface and API documentation, demonstrating the professional, developer-friendly design of the PMMS application.
-
 ---
 
 **Built with ❤️ using Angular and .NET Core**
