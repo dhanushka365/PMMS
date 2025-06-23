@@ -467,26 +467,6 @@ docker build -f backend/backend/backend/Dockerfile.test -t pmms-tests .
 docker run --rm pmms-tests dotnet test
 ```
 
-#### Test Results Example
-```
-Starting test execution, please wait...
-A total of 25 test files matched the specified pattern.
-
-✓ GetAllMaintenanceRequestsAsync_ShouldReturnAllRequests_WhenRepositoryHasData [2ms]
-✓ GetMaintenanceRequestByIdAsync_ShouldReturnRequest_WhenRequestExists [1ms]
-✓ CreateMaintenanceRequestAsync_ShouldCreateAndReturnRequest_WithValidData [3ms]
-✓ UpdateMaintenanceRequestAsync_WithAdminRole_ShouldUpdateStatusAndAllFields [2ms]
-✓ UpdateMaintenanceRequestAsync_WithPropertyManagerRole_ShouldNotUpdateStatus [2ms]
-✓ DeleteMaintenanceRequestAsync_ShouldReturnTrue_WhenDeletionSuccessful [1ms]
-✓ SearchMaintenanceRequestsAsync_ShouldReturnMatchingRequests_WhenGivenSearchTerm [2ms]
-
-Test Run Successful.
-Total tests: 25
-     Passed: 25
-     Failed: 0
-    Skipped: 0
- Total time: 1.2345 Seconds
-```
 
 ### Manual Testing Workflow
 Follow this complete workflow to test all application features:
