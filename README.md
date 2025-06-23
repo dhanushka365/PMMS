@@ -125,53 +125,174 @@ A comprehensive web application for managing property maintenance requests with 
 
 ## 🏗️ Architecture Overview
 
-### System Architecture
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Angular SPA   │    │   .NET Core     │    │   In-Memory     │
-│   (Frontend)    │◄──►│   Web API       │◄──►│   Database      │
-│   Port: 4200    │    │   Port: 5110    │    │   Entity        │
-└─────────────────┘    └─────────────────┘    │   Framework     │
-                                              └─────────────────┘
+### Clean Architecture Implementation
+
+The Property Maintenance Management System follows **Clean Architecture** principles with clear separation of concerns across four distinct layers. The architecture is documented with a comprehensive PlantUML diagram showing layer relationships and dependencies.
+
+#### Architecture Diagram
+![Backend Clean Architecture](./UI-Screenshots/backend%20clean%20architecture.png)
+*Backend architecture following Clean Architecture principles with clear layer separation and dependency inversion*
+
+The system architecture demonstrates:
+- **Layer Boundaries**: Clear separation between API, Application, Domain, and Infrastructure
+- **Dependency Flow**: Dependencies point inward following the Dependency Rule
+- **Component Relationships**: Interfaces, implementations, and their interactions
+- **Business Logic Isolation**: Core domain logic independent of external concerns
+
+### Layer Responsibilities
+
+#### 🎯 **API Layer (Controllers)**
+- **Purpose**: Entry point for HTTP requests
+- **Responsibilities**:
+  - HTTP request/response handling
+  - Input validation and model binding
+  - Route mapping and parameter extraction
+  - Response formatting (JSON serialization)
+  - HTTP status code management
+- **Dependencies**: Only depends on Application layer interfaces
+- **Example**:
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class MaintenanceRequestsController : ControllerBase
+{
+    private readonly IMaintenanceRequestService _service;
+    
+    public async Task<ActionResult<IEnumerable<MaintenanceRequestDto>>> GetAllMaintenanceRequests(
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] MaintenanceStatus? status = null)
+    {
+        var requests = await _service.GetAllMaintenanceRequestsAsync();
+        return Ok(requests);
+    }
+}
 ```
 
-### Technology Stack
-- **Frontend**: Angular 17+ with TypeScript, Angular Material, Reactive Forms
-- **Backend**: .NET 8 Web API with Entity Framework Core
-- **Database**: In-Memory Database (EF Core)
-- **Authentication**: Role-based simulation (Admin/Property Manager)
-- **Containerization**: Docker with multi-stage builds
-- **Reverse Proxy**: Nginx for frontend routing and API proxying
+#### 🔧 **Application Layer (Services)**
+- **Purpose**: Orchestrates business workflows
+- **Responsibilities**:
+  - Business logic implementation
+  - Role-based authorization
+  - Data transformation (Entity ↔ DTO)
+  - Cross-cutting concerns (logging, validation)
+  - Use case coordination
+- **Dependencies**: Depends on Domain entities and Infrastructure interfaces
+- **Example**:
+```csharp
+public class MaintenanceRequestService : IMaintenanceRequestService
+{
+    public async Task<MaintenanceRequestDto> UpdateMaintenanceRequestAsync(
+        int id, UpdateMaintenanceRequestDto dto, UserRole userRole)
+    {
+        var existingRequest = await _repository.GetByIdAsync(id);
+        
+        // Business rule: Only Admin can update status
+        if (userRole == UserRole.Admin && dto.Status.HasValue)
+        {
+            existingRequest.Status = dto.Status.Value;
+        }
+        
+        existingRequest.UpdatedDate = DateTime.UtcNow;
+        var updatedRequest = await _repository.UpdateAsync(existingRequest);
+        
+        return _mapper.Map<MaintenanceRequestDto>(updatedRequest);
+    }
+}
+```
 
-### Project Structure
+#### 🏛️ **Domain Layer (Entities)**
+- **Purpose**: Core business entities and rules
+- **Responsibilities**:
+  - Business entities definition
+  - Domain logic and invariants
+  - Business rules enforcement
+  - Value objects and enums
+  - Domain events (if applicable)
+- **Dependencies**: No dependencies on other layers (pure business logic)
+- **Example**:
+```csharp
+public class MaintenanceRequest
+{
+    public int Id { get; set; }
+    public string MaintenanceEventName { get; set; } = string.Empty;
+    public MaintenanceStatus Status { get; set; }
+    public DateTime CreatedDate { get; set; }
+    
+    // Domain method example
+    public bool CanBeEditedBy(UserRole userRole)
+    {
+        return userRole == UserRole.Admin || Status == MaintenanceStatus.New;
+    }
+    
+    public bool CanBeDeletedBy(UserRole userRole)
+    {
+        return userRole == UserRole.PropertyManager && Status == MaintenanceStatus.New;
+    }
+}
 ```
-PMMS/
-├── frontend/                    # Angular application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/     # UI components
-│   │   │   ├── services/       # HTTP and role services
-│   │   │   ├── models/         # TypeScript interfaces
-│   │   │   └── environments/   # Configuration files
-│   │   └── ...
-│   ├── Dockerfile
-│   └── nginx.conf
-├── backend/backend/backend/     # .NET Core API
-│   ├── Controllers/            # API endpoints
-│   ├── Application/
-│   │   ├── Services/          # Business logic
-│   │   ├── DTOs/              # Data transfer objects
-│   │   └── Interfaces/        # Service contracts
-│   ├── Domain/
-│   │   ├── Entities/          # Data models
-│   │   └── Enums/             # Status and role enums
-│   ├── Infrastructure/
-│   │   ├── Data/              # Database context
-│   │   └── Repositories/      # Data access layer
-│   └── Dockerfile
-├── docker-compose.yml          # Container orchestration
-└── README.md
+
+#### 🗄️ **Infrastructure Layer (Data Access)**
+- **Purpose**: External system integration
+- **Responsibilities**:
+  - Database operations (Entity Framework)
+  - External API integrations
+  - File system operations
+  - Email services
+  - Caching implementation
+- **Dependencies**: Depends on Domain entities, implements Application interfaces
+- **Example**:
+```csharp
+public class MaintenanceRequestRepository : IMaintenanceRequestRepository
+{
+    private readonly ApplicationDbContext _context;
+    
+    public async Task<IEnumerable<MaintenanceRequest>> SearchAsync(string searchTerm)
+    {
+        return await _context.MaintenanceRequests
+            .Where(x => x.MaintenanceEventName.Contains(searchTerm) ||
+                       x.PropertyName.Contains(searchTerm) ||
+                       x.Description.Contains(searchTerm))
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
+    }
+}
 ```
+
+### 🔄 Dependency Flow (Dependency Inversion Principle)
+
+```
+API Layer          →    Application Layer    →    Domain Layer
+     ↓                        ↓                       ↑
+Infrastructure Layer    ←    Repository Interface    ←
+```
+
+**Key Principles:**
+- **Dependency Rule**: Dependencies point inward toward the Domain
+- **Interface Segregation**: Each layer depends on interfaces, not implementations
+- **Inversion of Control**: High-level modules don't depend on low-level modules
+- **Single Responsibility**: Each layer has one reason to change
+
+### 🎯 Benefits of This Architecture
+
+#### **1. Testability**
+- Business logic isolated in Application layer
+- Easy to mock dependencies with interfaces
+- Domain logic testable without external dependencies
+
+#### **2. Maintainability**
+- Clear separation of concerns
+- Changes in one layer don't affect others
+- Easy to locate and modify specific functionality
+
+#### **3. Flexibility**
+- Can swap out Infrastructure implementations
+- Business logic independent of UI and database
+- Easy to add new features without breaking existing code
+
+#### **4. Scalability**
+- Layers can be scaled independently
+- Clean interfaces enable distributed deployment
+- Caching and optimization can be added transparently
 
 ## 👥 Role Management & Access Control
 
@@ -263,7 +384,109 @@ export const environment = {
 };
 ```
 
-## 🧪 Testing
+**Role-Based Authorization Tests**
+```csharp
+// Example: Testing role-based business rules
+[Theory]
+[InlineData(UserRole.Admin, MaintenanceStatus.Accepted, true)]
+[InlineData(UserRole.PropertyManager, MaintenanceStatus.Accepted, false)]
+public async Task UpdateMaintenanceRequestAsync_ShouldRespectRoleBasedStatusChangeRules(
+    UserRole userRole, MaintenanceStatus requestedStatus, bool shouldChangeStatus)
+{
+    // Test verifies that only admins can change request status
+    var result = await _service.UpdateMaintenanceRequestAsync(requestId, updateDto, userRole);
+    
+    if (shouldChangeStatus)
+        result.Status.Should().Be(requestedStatus);
+    else
+        result.Status.Should().Be(MaintenanceStatus.New); // Unchanged
+}
+```
+
+**Business Logic Validation**
+- Status change permissions (Admin vs Property Manager)
+- Data integrity and audit trail maintenance
+- Image handling and preservation
+- Error handling for invalid scenarios
+
+**Edge Cases & Error Handling**
+- Non-existent entity handling
+- Null data scenarios
+- Invalid role permissions
+- Concurrent modification handling
+
+##### **3. Test Structure**
+
+**Unit Tests** (`MaintenanceRequestServiceTests.cs`)
+- Mock all dependencies using Moq
+- Test individual methods in isolation
+- Verify business logic without external dependencies
+- Fast execution, suitable for TDD
+
+**Integration Tests** (`MaintenanceRequestServiceIntegrationTests.cs`)
+- Use real AutoMapper configuration
+- Test service layer with actual mapping logic
+- Verify end-to-end data transformation
+- Ensure proper integration between components
+
+**Test Helpers** (`TestDataHelper.cs`)
+- Centralized test data creation
+- Consistent test entity generation
+- Reduces test code duplication
+- Maintains test data consistency
+
+#### Running Tests
+
+##### **Local Development**
+```bash
+# Navigate to test project
+cd backend/backend/backend.Tests
+
+# Restore packages
+dotnet restore
+
+# Run all tests
+dotnet test
+
+# Run tests with coverage
+dotnet test --collect:"XPlat Code Coverage"
+
+# Run specific test class
+dotnet test --filter MaintenanceRequestServiceTests
+
+# Run tests with detailed output
+dotnet test --logger "console;verbosity=detailed"
+```
+
+##### **Docker Environment**
+```bash
+# Build test image
+docker build -f backend/backend/backend/Dockerfile.test -t pmms-tests .
+
+# Run tests in container
+docker run --rm pmms-tests dotnet test
+```
+
+#### Test Results Example
+```
+Starting test execution, please wait...
+A total of 25 test files matched the specified pattern.
+
+✓ GetAllMaintenanceRequestsAsync_ShouldReturnAllRequests_WhenRepositoryHasData [2ms]
+✓ GetMaintenanceRequestByIdAsync_ShouldReturnRequest_WhenRequestExists [1ms]
+✓ CreateMaintenanceRequestAsync_ShouldCreateAndReturnRequest_WithValidData [3ms]
+✓ UpdateMaintenanceRequestAsync_WithAdminRole_ShouldUpdateStatusAndAllFields [2ms]
+✓ UpdateMaintenanceRequestAsync_WithPropertyManagerRole_ShouldNotUpdateStatus [2ms]
+✓ DeleteMaintenanceRequestAsync_ShouldReturnTrue_WhenDeletionSuccessful [1ms]
+✓ SearchMaintenanceRequestsAsync_ShouldReturnMatchingRequests_WhenGivenSearchTerm [2ms]
+
+Test Run Successful.
+Total tests: 25
+     Passed: 25
+     Failed: 0
+    Skipped: 0
+ Total time: 1.2345 Seconds
+```
 
 ### Manual Testing Workflow
 Follow this complete workflow to test all application features:
